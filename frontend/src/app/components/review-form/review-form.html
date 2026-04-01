@@ -1,0 +1,32 @@
+<div class="review-form">
+  <h3>{{ 'REVIEW_FORM.TITLE' | translate }}</h3>
+  
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+
+  <div class="form-group mb-3">
+    <label class="form-label">{{ 'REVIEW_FORM.RATING_LABEL' | translate }}</label>
+    <div>
+      <app-star-rating [rating]="rating" (ratingChange)="rating = $event"></app-star-rating>
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="comment" class="form-label">{{ 'REVIEW_FORM.COMMENT_LABEL' | translate }}</label>
+    <textarea id="comment" [(ngModel)]="comment" class="form-control" rows="3" [placeholder]="'REVIEW_FORM.COMMENT_PLACEHOLDER' | translate"></textarea>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="image" class="form-label">{{ 'REVIEW_FORM.IMAGE_LABEL' | translate }} ({{ 'REVIEW_FORM.OPTIONAL' | translate }})</label>
+    <input type="file" id="image" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+    
+    <div *ngIf="selectedFileUrl()" class="mt-2 text-center">
+      <img [src]="selectedFileUrl()" class="img-thumbnail" style="max-height: 150px;">
+      <div class="mt-2"><button class="btn btn-sm btn-outline-danger" (click)="removeImage()">{{ 'REVIEW_FORM.REMOVE' | translate }}</button></div>
+    </div>
+  </div>
+
+  <button class="btn btn-dark" (click)="submitReview()" [disabled]="isSubmitting() || rating === 0">
+    <span *ngIf="isSubmitting()" class="spinner-border spinner-border-sm me-2"></span>
+    {{ 'REVIEW_FORM.SUBMIT' | translate }}
+  </button>
+</div>

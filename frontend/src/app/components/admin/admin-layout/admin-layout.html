@@ -1,0 +1,41 @@
+<div class="d-flex" style="min-height: calc(100vh - 70px);">
+  <!-- Sidebar -->
+  <div class="text-white p-4 shadow-sm" style="width: 260px; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);">
+    <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-secondary">
+      <i class="bi bi-shield-lock text-warning fs-4"></i>
+      <h5 class="mb-0 fw-bold">Admin Kontrolü</h5>
+    </div>
+    
+    <ul class="nav flex-column gap-2">
+      <li class="nav-item">
+        <a class="nav-link text-white opacity-75 rounded-3 d-flex align-items-center p-3 transition-all" 
+           routerLink="/admin/dashboard" 
+           routerLinkActive="active-sidebar">
+          <i class="bi bi-speedometer2 me-3 fs-5"></i>
+          <span class="fw-500">Özet (Dashboard)</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white opacity-75 rounded-3 d-flex align-items-center p-3 transition-all" 
+           routerLink="/admin/orders" 
+           routerLinkActive="active-sidebar">
+          <i class="bi bi-receipt me-3 fs-5"></i>
+          <span class="fw-500">Sipariş Yönetimi</span>
+        </a>
+      </li>
+      <li class="nav-item mt-2">
+        <a class="nav-link text-white opacity-75 rounded-3 d-flex align-items-center p-3 transition-all" 
+           routerLink="/admin/products" 
+           routerLinkActive="active-sidebar">
+          <i class="bi bi-box-seam me-3 fs-5"></i>
+          <span class="fw-500">Ürün Yönetimi</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="flex-grow-1 p-4 bg-light" style="overflow-y: auto;">
+    <router-outlet></router-outlet>
+  </div>
+</div>

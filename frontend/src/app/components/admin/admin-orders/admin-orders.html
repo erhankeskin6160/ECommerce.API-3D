@@ -1,0 +1,171 @@
+<div class="card border-0 shadow-sm rounded-4">
+  <!-- Toast -->
+  @if (toast()) {
+    <div class="position-fixed top-0 end-0 p-3" style="z-index:1100">
+      <div class="toast show align-items-center border-0 shadow-lg text-white"
+           [class.bg-success]="toast()!.type === 'success'"
+           [class.bg-danger]="toast()!.type === 'danger'">
+        <div class="d-flex">
+          <div class="toast-body fw-500">
+            <i class="bi me-2" [class.bi-check-circle-fill]="toast()!.type === 'success'" [class.bi-exclamation-triangle-fill]="toast()!.type === 'danger'"></i>
+            {{ toast()!.message }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toast.set(null)"></button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <div>
+        <h4 class="mb-0 fw-bold">Sipariş Yönetimi</h4>
+        <p class="text-muted small mb-0">Tüm kullanıcı siparişlerini ve durumlarını yönetin</p>
+      </div>
+      @if (filteredOrders().length !== allOrders().length || searchQuery() || selectedStatus()) {
+        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" (click)="clearFilters()">
+          <i class="bi bi-x-circle me-1"></i>Filtreleri Temizle
+        </button>
+      }
+    </div>
+    <!-- Search & Filter -->
+    <div class="row g-2 pb-3">
+      <div class="col-md-6">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 bg-light"
+                 placeholder="Müşteri adı, email veya sipariş ID..."
+                 [value]="searchQuery()"
+                 (input)="searchQuery.set($any($event.target).value)">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select form-select-sm bg-light"
+                [ngModel]="selectedStatus()"
+                (ngModelChange)="selectedStatus.set($event)">
+          <option value="">Tüm Durumlar</option>
+          @for (st of availableStatuses; track st) {
+            <option [value]="st">{{ getStatusLabel(st) }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-center">
+        <span class="text-muted small">
+          <strong>{{ filteredOrders().length }}</strong> sipariş
+        </span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card-body p-4">
+    @if (loading()) {
+      <div class="d-flex justify-content-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+    } @else if (error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    } @else if (filteredOrders().length === 0) {
+      <div class="text-center py-5">
+        <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+        <p class="text-muted">{{ searchQuery() || selectedStatus() ? 'Filtrelere uyan sipariş bulunamadı.' : 'Henüz sipariş bulunmuyor.' }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Tarih</th>
+              <th>Müşteri</th>
+              <th>Ürünler</th>
+              <th>Toplam</th>
+              <th>Durum</th>
+              <th class="text-end">İşlem</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of filteredOrders(); track order.id) {
+              <tr>
+                <td><strong>#{{ order.id }}</strong></td>
+                <td class="small">{{ order.createdAt | date:'dd MMM yyyy, HH:mm' }}</td>
+                <td>
+                  <div class="fw-500">{{ order.userFullName }}</div>
+                  <div class="small text-muted">{{ order.userEmail }}</div>
+                </td>
+                <td>
+                  <ul class="list-unstyled mb-0 small">
+                    @for (item of order.items; track item.id) {
+                      <li>{{ item.quantity }}x {{ item.productName }}</li>
+                    }
+                  </ul>
+                </td>
+                <td class="fw-bold text-success">${{ order.totalAmount }}</td>
+                <td>
+                  <span [class]="getStatusClass(order.status)">{{ getStatusLabel(order.status) }}</span>
+                </td>
+                <td class="text-end">
+                  <select class="form-select form-select-sm d-inline-block w-auto me-2" 
+                          [ngModel]="order.status"
+                          (ngModelChange)="updateStatus(order, $event)">
+                    @for (status of availableStatuses; track status) {
+                      <option [value]="status">{{ getStatusLabel(status) }}</option>
+                    }
+                  </select>
+                  <button class="btn btn-sm btn-outline-primary" (click)="openShippingModal(order)">
+                    <i class="bi bi-truck me-1"></i>Kargo
+                  </button>
+                  @if (order.trackingNumber) {
+                    <div class="small text-muted mt-1 text-end">
+                      <i class="bi bi-box-seam me-1"></i>{{ order.shippingCompany }} ({{ order.trackingNumber }})
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Shipping Update Modal -->
+  @if (selectedOrderForShipping()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5)">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold">Kargo Bilgisi Gir (#{{ selectedOrderForShipping()!.id }})</h5>
+            <button type="button" class="btn-close" (click)="closeShippingModal()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label fw-500">Kargo Firması</label>
+              <select class="form-select" [ngModel]="shippingForm().company" (ngModelChange)="shippingForm.set({...shippingForm(), company: $event})">
+                <option value="">Seçiniz...</option>
+                @for (comp of availableCompanies; track comp) {
+                  <option [value]="comp">{{ comp }}</option>
+                }
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-500">Takip Numarası</label>
+              <input type="text" class="form-control" placeholder="Örn: 1029384756" 
+                     [ngModel]="shippingForm().trackingNumber" 
+                     (ngModelChange)="shippingForm.set({...shippingForm(), trackingNumber: $event})">
+            </div>
+            <div class="alert alert-info py-2 small mb-0">
+              <i class="bi bi-info-circle me-1"></i>
+              Kargo bilgisi girildiğinde, sipariş durumu otomatik olarak "Kargoda" (Shipped) yapılacaktır ve müşteriye bir takip linki gösterilecektir.
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light" (click)="closeShippingModal()">İptal</button>
+            <button type="button" class="btn btn-primary" (click)="submitShipping()">
+              <i class="bi bi-save me-1"></i>Kaydet
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

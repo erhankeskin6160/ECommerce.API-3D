@@ -1,0 +1,23 @@
+.admin-input:focus {
+  background-color: transparent;
+  color: white;
+  box-shadow: none;
+  border-color: rgba(245, 166, 35, 0.5);
+}
+
+.admin-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .btn {
+  border-color: rgba(245, 166, 35, 0.5) !important;
+}
+
+.hover-white:hover {
+  color: white !important;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}

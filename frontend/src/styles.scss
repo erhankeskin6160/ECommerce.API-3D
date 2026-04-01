@@ -1,0 +1,311 @@
+/* ==========================================
+   Global Styles - Ben 10 Omnitrix Store
+   ========================================== */
+
+/* CSS Variables */
+:root {
+  --primary: #f5a623;
+  --primary-dark: #e0941a;
+  --primary-light: #ffd980;
+  --accent: #1a1a2e;
+  --accent-light: #16213e;
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --text-dark: #1a1a2e;
+  --text-muted: #6c757d;
+  --bg-light: #f8f9fa;
+  --bg-card: #ffffff;
+  --border-radius: 12px;
+  --border-radius-lg: 20px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.16);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #f0f2f5;
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ==========================================
+   Product Card
+   ========================================== */
+.product-card {
+  border-radius: var(--border-radius) !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  background: var(--bg-card);
+  transition: var(--transition);
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg) !important;
+    border-color: var(--primary) !important;
+
+    .product-img {
+      transform: scale(1.05);
+    }
+    .btn-add-cart {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+  }
+}
+
+.product-img {
+  height: 220px;
+  object-fit: cover;
+  width: 100%;
+  transition: transform 0.4s ease;
+  background: #f0f2f5;
+}
+
+.product-img-placeholder {
+  height: 220px;
+  background: linear-gradient(135deg, #f0f2f5 0%, #e2e5ea 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+  font-size: 3rem;
+}
+
+/* ==========================================
+   Buttons
+   ========================================== */
+.btn-primary-custom {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  color: #fff;
+  border-radius: 50px;
+  padding: 10px 28px;
+  font-weight: 600;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(245,166,35,0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245,166,35,0.5);
+    color: #fff;
+  }
+}
+
+.btn-add-cart {
+  border-radius: 50px !important;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: var(--transition) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+
+  &:hover {
+    background-color: var(--primary) !important;
+    color: #fff !important;
+    transform: scale(1.03);
+  }
+}
+
+/* ==========================================
+   Badges & Tags
+   ========================================== */
+.category-badge {
+  background: rgba(245,166,35,0.12);
+  color: var(--primary-dark);
+  border-radius: 50px;
+  padding: 3px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.stock-badge {
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* ==========================================
+   Search & Filters
+   ========================================== */
+.search-bar {
+  border-radius: 50px !important;
+  border: 2px solid rgba(0,0,0,0.08) !important;
+  padding: 12px 20px !important;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+
+  &:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(245,166,35,0.15) !important;
+    outline: none;
+  }
+}
+
+.filter-card {
+  border-radius: var(--border-radius) !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   Cart
+   ========================================== */
+.cart-item {
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding: 16px 0;
+  transition: var(--transition);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(245,166,35,0.04); }
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,0,0,0.12) !important;
+  background: #fff !important;
+  transition: var(--transition);
+
+  &:hover {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+  }
+}
+
+/* ==========================================
+   Hero Banner
+   ========================================== */
+.hero-banner {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 60%, #0f3460 100%);
+  padding: 80px 0 60px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,166,35,0.15), transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.hero-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fff;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+}
+
+/* ==========================================
+   Section Headings
+   ========================================== */
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  position: relative;
+  padding-bottom: 12px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 48px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 4px;
+  }
+}
+
+/* ==========================================
+   Loading & Empty States
+   ========================================== */
+.spinner-custom {
+  color: var(--primary) !important;
+  width: 3rem;
+  height: 3rem;
+}
+
+.empty-state {
+  padding: 80px 20px;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 5rem;
+    color: #dee2e6;
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  h4 { color: var(--text-muted); font-weight: 600; }
+  p { color: #adb5bd; }
+}
+
+/* ==========================================
+   Utilities
+   ========================================== */
+.text-primary-custom { color: var(--primary) !important; }
+.bg-primary-custom { background-color: var(--primary) !important; }
+.fw-800 { font-weight: 800 !important; }
+.rounded-xl { border-radius: var(--border-radius) !important; }
+.rounded-2xl { border-radius: var(--border-radius-lg) !important; }
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245,166,35,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(245,166,35,0); }
+}
+
+.fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+.pulse-glow { animation: pulse-glow 2s infinite; }
+
+/* Staggered card animation */
+.product-card { animation: fadeInUp 0.4s ease both; }
+@for $i from 1 through 12 {
+  .product-card:nth-child(#{$i}) { animation-delay: #{($i - 1) * 0.05}s; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-banner { padding: 50px 0 40px; }
+  .product-img { height: 180px; }
+}

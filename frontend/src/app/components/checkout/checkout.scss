@@ -1,0 +1,15 @@
+.stripe-element-container {
+  padding: 10px 0;
+}
+
+.stripe-element-container iframe {
+  margin: 0 !important;
+}
+
+.form-control {
+  &:focus {
+    box-shadow: none;
+    border: 1px solid #ced4da;
+    background-color: #fff !important;
+  }
+}

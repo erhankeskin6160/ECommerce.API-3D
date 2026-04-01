@@ -1,0 +1,253 @@
+<!-- Loading -->
+@if (loading()) {
+  <div class="text-center py-5">
+    <div class="spinner-border spinner-custom" role="status">
+      <span class="visually-hidden">Yükleniyor...</span>
+    </div>
+    <p class="text-muted mt-3">Ürün yükleniyor...</p>
+  </div>
+}
+
+<!-- Error -->
+@if (error()) {
+  <div class="container py-5">
+    <div class="alert alert-danger rounded-xl d-flex align-items-center gap-2">
+      <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+      {{ error() }}
+    </div>
+    <a routerLink="/" class="btn btn-primary-custom btn mt-3">
+      <i class="bi bi-arrow-left me-2"></i>Ürünlere Dön
+    </a>
+  </div>
+}
+
+<!-- Product Detail -->
+@if (!loading() && !error() && product()) {
+  <div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb" style="font-size:0.88rem">
+        <li class="breadcrumb-item">
+          <a routerLink="/" class="text-decoration-none" style="color:var(--primary)">
+            <i class="bi bi-grid me-1"></i>Ürünler
+          </a>
+        </li>
+        <li class="breadcrumb-item active text-muted">{{ product()!.name }}</li>
+      </ol>
+    </nav>
+
+    <div class="row g-5">
+      <div class="col-12 px-md-5">
+        <div class="detail-img-wrapper position-relative mb-3 mx-auto shadow-sm" style="max-width: 800px; height: 500px; border-radius: var(--radius-lg); background: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+          @if (selectedImage()) {
+            <img [src]="selectedImage()" [alt]="getLocalizedName()" class="w-100 h-100" style="object-fit: contain; max-height: 500px; transition: transform 0.3s ease;">
+          } @else {
+            <div class="w-100 d-flex align-items-center justify-content-center text-muted" style="height: 400px;">
+              <i class="bi bi-image" style="font-size: 4rem;"></i>
+            </div>
+          }
+          
+          <!-- Category Badge -->
+          @if (product()!.category) {
+            <span class="category-badge position-absolute top-0 start-0 m-3 z-3">
+              {{ product()!.category }}
+            </span>
+          }
+
+          <!-- Navigation Arrows -->
+          @if (getAllImages().length > 1) {
+            <button class="btn btn-light position-absolute start-0 top-50 translate-middle-y ms-3 rounded-circle shadow d-flex align-items-center justify-content-center" 
+                    style="width: 45px; height: 45px; z-index: 10; opacity: 0.85;" 
+                    (click)="prevImage($event)">
+               <i class="bi bi-chevron-left fs-5"></i>
+            </button>
+            <button class="btn btn-light position-absolute end-0 top-50 translate-middle-y me-3 rounded-circle shadow d-flex align-items-center justify-content-center" 
+                    style="width: 45px; height: 45px; z-index: 10; opacity: 0.85;" 
+                    (click)="nextImage($event)">
+               <i class="bi bi-chevron-right fs-5"></i>
+            </button>
+          }
+        </div>
+
+        <!-- Thumbnail Gallery -->
+        <div class="d-flex gap-2 overflow-auto pb-2 custom-scrollbar justify-content-center">
+          @if (product()!.imageUrl) {
+            <div class="thumbnail-wrapper" role="button" tabindex="0"
+                 (click)="selectImage(product()!.imageUrl!)"
+                 [class.active-thumb]="selectedImage() === product()!.imageUrl"
+                 style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 8px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: 0.2s;">
+              <img [src]="product()!.imageUrl" alt="Ana Resim" class="w-100 h-100" style="object-fit: cover;">
+            </div>
+          }
+          @if (product()!.additionalImages && product()!.additionalImages!.length > 0) {
+            @for (imgUrl of product()!.additionalImages!; track imgUrl) {
+              <div class="thumbnail-wrapper" role="button" tabindex="0"
+                   (click)="selectImage(imgUrl)"
+                   [class.active-thumb]="selectedImage() === imgUrl"
+                   style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 8px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: 0.2s;">
+                <img [src]="imgUrl" alt="Ek Resim" class="w-100 h-100" style="object-fit: cover;">
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Info Column -->
+      <div class="col-12 d-flex flex-column px-md-5 mt-4">
+        <h1 class="detail-title mb-2 text-center">{{ getLocalizedName() }}</h1>
+        <div class="detail-price mb-3 text-center">${{ product()!.price | number:'1.2-2' }}</div>
+
+        <p class="detail-description mb-4 lead text-center mx-auto" style="max-width: 900px;">
+          {{ getLocalizedDescription() }}
+        </p>
+
+        <!-- Stock -->
+        <div class="d-flex align-items-center gap-2 mb-4">
+          @if (product()!.stockQuantity === 0) {
+            <span class="badge bg-danger rounded-pill px-3 py-2">
+              <i class="bi bi-x-circle me-1"></i>{{ 'PRODUCT_DETAIL.OUT_OF_STOCK' | translate }}
+            </span>
+          } @else if (product()!.stockQuantity <= 5) {
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+              <i class="bi bi-exclamation-circle me-1"></i>{{ 'PRODUCTS.LOW_STOCK' | translate: {count: product()!.stockQuantity} }}
+            </span>
+          } @else {
+            <span class="badge bg-success rounded-pill px-3 py-2">
+              <i class="bi bi-check-circle me-1"></i>{{ 'PRODUCTS.IN_STOCK' | translate }} ({{ product()!.stockQuantity }} {{ 'PRODUCT_DETAIL.UNIT' | translate }})
+            </span>
+          }
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex gap-3 flex-wrap">
+          @if (product()!.stockQuantity > 0) {
+            <button class="btn btn-primary-custom btn flex-grow-1"
+                    style="max-width:280px"
+                    (click)="addToCart()">
+              @if (addedToCart()) {
+                <i class="bi bi-check2-circle me-2"></i> {{ 'PRODUCT_DETAIL.ADDED' | translate }}
+              } @else {
+                <i class="bi bi-bag-plus me-2"></i> {{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
+              }
+            </button>
+          } @else {
+            <button class="btn btn-primary-custom btn flex-grow-1"
+                    style="max-width:280px"
+                    [disabled]="isSubscribedToStock() || isSubscribing()"
+                    (click)="subscribeToStock()">
+              @if (isSubscribing()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> {{ 'PRODUCT_DETAIL.SUBSCRIBING' | translate }}
+              } @else if (isSubscribedToStock()) {
+                <i class="bi bi-check-circle-fill me-2"></i> {{ 'PRODUCT_DETAIL.SUBSCRIBED' | translate }}
+              } @else {
+                <i class="bi bi-box-seam me-2"></i> {{ 'PRODUCT_DETAIL.NOTIFY_ME' | translate }}
+              }
+            </button>
+          }
+          <a routerLink="/" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i> {{ 'PRODUCT_DETAIL.BACK' | translate }}
+          </a>
+        </div>
+
+        <!-- Extra Info -->
+        <div class="detail-info-box mt-4">
+          <div class="row g-3 text-center">
+            <div class="col-4">
+              <i class="bi bi-truck fs-4 text-primary-custom d-block mb-1"></i>
+              <span class="small text-muted">{{ 'PRODUCT_DETAIL.FAST_SHIPPING' | translate }}</span>
+            </div>
+            <div class="col-4">
+              <i class="bi bi-shield-check fs-4 text-success d-block mb-1"></i>
+              <span class="small text-muted">{{ 'PRODUCT_DETAIL.SECURE_PAYMENT' | translate }}</span>
+            </div>
+            <div class="col-4">
+              <i class="bi bi-arrow-repeat fs-4 text-info d-block mb-1"></i>
+              <span class="small text-muted">{{ 'PRODUCT_DETAIL.EASY_RETURN' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-5 pt-4 border-top">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <h3 class="mb-4 fw-bold" style="color: var(--text-dark);">
+            {{ 'REVIEW_FORM.REVIEWS_TITLE' | translate }}
+            <span class="fs-5 text-muted ms-2">({{ reviews().length }})</span>
+            <span *ngIf="reviews().length > 0" class="ms-3 fs-5 fw-normal">
+              {{ 'REVIEW_FORM.AVERAGE' | translate }} <app-star-rating [rating]="averageRating()" [readonly]="true"></app-star-rating> <span class="ms-1">{{ averageRating() }}</span>
+            </span>
+          </h3>
+          
+          <div *ngIf="reviews().length === 0" class="text-muted mb-4 fst-italic">
+            {{ 'REVIEW_FORM.NO_REVIEWS' | translate }}
+          </div>
+
+          <div *ngFor="let review of reviews()" class="review-item mb-4 pb-4 border-bottom">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong style="color:var(--primary)">{{ review.userName || 'Anonim' }}</strong>
+              <span class="text-muted small">{{ review.createdAt | date }}</span>
+            </div>
+            <app-star-rating [rating]="review.rating" [readonly]="true"></app-star-rating>
+            <p class="mt-2 mb-2" *ngIf="review.comment">{{ review.comment }}</p>
+            <div *ngIf="review.imageUrl" class="mt-3">
+              <img [src]="baseUrl + review.imageUrl" class="img-thumbnail rounded shadow-sm" style="max-height: 150px; cursor: pointer;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    @if (relatedProducts().length > 0) {
+      <div class="mt-5 pt-4 border-top">
+        <h3 class="mb-4 fw-bold" style="color: var(--text-dark);">
+          {{ 'PRODUCT_DETAIL.RELATED_PRODUCTS' | translate }}
+        </h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 pb-4">
+          @for (rp of relatedProducts(); track rp.id) {
+            <div class="col">
+              <div class="card h-100 shadow-sm product-card border-0" [routerLink]="['/products', rp.id]" style="cursor: pointer;">
+                @if (rp.imageUrl) {
+                  <img [src]="rp.imageUrl" [alt]="rp.name" class="product-img">
+                } @else {
+                  <div class="product-img-placeholder" style="height:250px; background:#f0f2f5; display:flex; align-items:center; justify-content:center; font-size:4rem; color:#adb5bd;">
+                    <i class="bi bi-image"></i>
+                  </div>
+                }
+                
+                <div class="position-absolute top-0 end-0 m-2">
+                  @if (rp.category) {
+                    <span class="category-badge">{{ rp.category }}</span>
+                  }
+                </div>
+
+                <div class="card-body d-flex flex-column gap-2 p-3">
+                  <h5 class="card-title fw-700 mb-0 lh-sm" style="font-size:0.95rem">{{ rp.name }}</h5>
+                  
+                  <div class="d-flex align-items-center justify-content-between mt-auto pt-2">
+                    <span class="fw-800 fs-5" style="color:#f5a623">${{ rp.price | number:'1.2-2' }}</span>
+                  </div>
+
+                  <button class="btn btn-sm btn-add-cart w-100 mt-1"
+                          [class.btn-success]="addedToCartId() === rp.id"
+                          [class.btn-outline-primary]="addedToCartId() !== rp.id"
+                          [disabled]="rp.stockQuantity === 0"
+                          (click)="$event.stopPropagation(); addToCart(rp)">
+                    @if (addedToCartId() === rp.id) {
+                      <i class="bi bi-check2 me-1"></i>{{ 'PRODUCT_DETAIL.ADDED' | translate }}
+                    } @else {
+                      <i class="bi bi-bag-plus me-1"></i>{{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

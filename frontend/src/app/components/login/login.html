@@ -1,0 +1,91 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <!-- Logo / Title -->
+    <div class="text-center mb-4">
+      <div class="auth-logo mx-auto mb-3">
+        <i class="bi bi-stars text-white fs-1"></i>
+      </div>
+      <h2 class="auth-title">Hoş Geldiniz</h2>
+      <p class="text-muted">Hesabınıza giriş yapın</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger rounded-xl d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="auth-label" for="email">E-posta Adresi</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text">
+            <i class="bi bi-envelope"></i>
+          </span>
+          <input id="email" type="email" class="form-control"
+                 placeholder="ornek@mail.com"
+                 [value]="email()"
+                 (input)="email.set($any($event.target).value)"
+                 required>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-4">
+        <label class="auth-label" for="password">Şifre</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text">
+            <i class="bi bi-lock"></i>
+          </span>
+          <input id="password"
+                 [type]="showPassword() ? 'text' : 'password'"
+                 class="form-control"
+                 placeholder="••••••••"
+                 [value]="password()"
+                 (input)="password.set($any($event.target).value)"
+                 required>
+          <button type="button" class="input-group-text bg-white"
+                  (click)="showPassword.set(!showPassword())">
+            <i [class]="'bi ' + (showPassword() ? 'bi-eye-slash' : 'bi-eye') + ' text-muted'"></i>
+          </button>
+        </div>
+        <div class="text-end mt-1">
+          <a href="#" class="small" style="color:var(--primary)">Şifremi Unuttum?</a>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary-custom btn w-100 mb-3"
+              [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          Giriş yapılıyor...
+        } @else {
+          <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+        }
+      </button>
+
+      <!-- Divider -->
+      <div class="auth-divider">
+        <span>veya</span>
+      </div>
+
+      <!-- Register Link -->
+      <p class="text-center text-muted mt-3 mb-2">
+        Hesabınız yok mu?
+        <a routerLink="/register" style="color:var(--primary);font-weight:600"> Üye Ol</a>
+      </p>
+
+      <!-- Admin Login Link -->
+      <div class="text-center mt-3 pt-3 border-top border-light">
+        <a routerLink="/admin-login" class="text-decoration-none small text-muted" style="transition: color 0.2s;" onmouseover="this.style.color='#f5a623'" onmouseout="this.style.color='#6c757d'">
+          <i class="bi bi-shield-lock me-1"></i>Yönetici Girişi
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

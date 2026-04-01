@@ -1,0 +1,20 @@
+.star-rating {
+  display: inline-flex;
+  gap: 2px;
+  
+  .star {
+    font-size: 24px;
+    color: #e0e0e0;
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+    
+    &.filled {
+      color: #222222; /* Etsy usually uses black stars for filled, or gold. Let's use black/dark-gray to look premium */
+    }
+  }
+
+  &.readonly .star {
+    cursor: default;
+  }
+}

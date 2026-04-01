@@ -1,0 +1,160 @@
+<div class="container py-5 mt-4">
+  <div class="row g-5">
+    
+    <!-- Sipariş Özeti ve Sepet Bilgileri (Sağ Taraf - Geniş Ekranlarda, Üstte - Mobil) -->
+    <div class="col-md-5 col-lg-4 order-md-last">
+      <h4 class="d-flex justify-content-between align-items-center mb-4">
+        <span class="text-primary fw-bold">Sipariş Özeti</span>
+        <span class="badge bg-primary rounded-pill">{{ cartService.totalCount() }}</span>
+      </h4>
+      <ul class="list-group mb-3 shadow-sm rounded-4 border-0">
+        @for (item of cartService.items(); track item.product.id) {
+          <li class="list-group-item d-flex justify-content-between lh-sm p-3 border-bottom border-light">
+            <div>
+              <h6 class="my-0 fw-500">{{ item.product.name }}</h6>
+              <small class="text-muted">Adet: {{ item.quantity }}</small>
+            </div>
+            <span class="text-muted fw-bold">${{ item.product.price * item.quantity | number:'1.2-2' }}</span>
+          </li>
+        }
+        
+        <li class="list-group-item d-flex justify-content-between bg-light p-3">
+          <div class="text-success">
+            <h6 class="my-0 fw-bold">Promosyon Kodu</h6>
+            <small>Uygulanmadı</small>
+          </div>
+          <span class="text-success">-$0.00</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between p-3 border-0 rounded-bottom-4">
+          <span class="fw-bold">Toplam (USD)</span>
+          <strong class="fs-5">${{ cartService.totalPrice() | number:'1.2-2' }}</strong>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Ödeme ve Teslimat Formu (Sol Taraf) -->
+    <div class="col-md-7 col-lg-8">
+      <h4 class="mb-4 fw-bold text-dark">Teslimat Adresi</h4>
+      
+      @if (success()) {
+        <div class="alert alert-success d-flex align-items-center rounded-4 shadow-sm p-4" role="alert">
+          <i class="bi bi-check-circle-fill fs-3 me-3"></i>
+          <div>
+            <h5 class="alert-heading mb-1 fw-bold">Ödeme Başarılı!</h5>
+            <p class="mb-0">Siparişiniz alındı, anasayfaya yönlendiriliyorsunuz...</p>
+          </div>
+        </div>
+      } @else {
+        
+        <form (ngSubmit)="handlePayment()" #checkoutForm="ngForm" class="bg-white p-4 p-md-5 rounded-4 shadow-sm">
+          <div class="row g-3">
+            <div class="col-sm-12">
+              <label for="fullName" class="form-label text-muted small fw-500">Ad Soyad</label>
+              <input type="text" class="form-control form-control-lg bg-light border-0" id="fullName" 
+                     name="fullName" [(ngModel)]="shippingDetails.fullName" required
+                     placeholder="Kart üzerindeki ad soyad">
+            </div>
+
+            <div class="col-12">
+              <label for="address" class="form-label text-muted small fw-500">Açık Adres</label>
+              <input type="text" class="form-control form-control-lg bg-light border-0" id="address" 
+                     name="address" [(ngModel)]="shippingDetails.address" required
+                     placeholder="Mahalle, Sokak, Apartman vb.">
+            </div>
+
+            <div class="col-md-6">
+              <label for="city" class="form-label text-muted small fw-500">Şehir</label>
+              <input type="text" class="form-control form-control-lg bg-light border-0" id="city" 
+                     name="city" [(ngModel)]="shippingDetails.city" required>
+            </div>
+
+            <div class="col-md-6">
+              <label for="zipCode" class="form-label text-muted small fw-500">Posta Kodu</label>
+              <input type="text" class="form-control form-control-lg bg-light border-0" id="zipCode" 
+                     name="zipCode" [(ngModel)]="shippingDetails.zipCode" required>
+            </div>
+          </div>
+
+          <hr class="my-5 border-light">
+
+          <h4 class="mb-4 fw-bold text-dark d-flex align-items-center">
+            Ödeme Yöntemi
+            <i class="bi bi-shield-lock-fill text-success ms-2 fs-5" title="Güvenli Ödeme"></i>
+          </h4>
+
+          <!-- Payment Method Selector -->
+          <div class="d-flex gap-3 mb-4">
+            <button type="button" class="btn flex-fill py-3 border rounded-4 d-flex flex-column align-items-center justify-content-center transition-all"
+                    [class.border-primary]="selectedPaymentMethod() === 'card'"
+                    [class.bg-primary-subtle]="selectedPaymentMethod() === 'card'"
+                    [class.text-primary]="selectedPaymentMethod() === 'card'"
+                    [class.shadow-sm]="selectedPaymentMethod() === 'card'"
+                    (click)="selectPaymentMethod('card')">
+              <i class="bi bi-credit-card fs-3 mb-2"></i>
+              <span class="fw-bold">Kredi / Banka Kartı</span>
+            </button>
+            <button type="button" class="btn flex-fill py-3 border rounded-4 d-flex flex-column align-items-center justify-content-center transition-all"
+                    [class.border-primary]="selectedPaymentMethod() === 'paypal'"
+                    [class.bg-primary-subtle]="selectedPaymentMethod() === 'paypal'"
+                    [class.text-primary]="selectedPaymentMethod() === 'paypal'"
+                    [class.shadow-sm]="selectedPaymentMethod() === 'paypal'"
+                    (click)="selectPaymentMethod('paypal')">
+              <i class="bi bi-paypal fs-3 mb-2"></i>
+              <span class="fw-bold">PayPal</span>
+            </button>
+          </div>
+
+          <!-- Stripe Card Payment -->
+          <div [class.d-none]="selectedPaymentMethod() !== 'card'">
+            <div class="row gy-3">
+              <div class="col-12">
+                <label class="form-label text-muted small fw-500">Kart Bilgileri</label>
+                <div class="p-3 bg-light rounded-3 border-0">
+                  <!-- Stripe Card Element Mount Point -->
+                  <div #cardInfo class="stripe-element-container"></div>
+                </div>
+              </div>
+            </div>
+
+            @if (error() && selectedPaymentMethod() === 'card') {
+              <div class="alert alert-danger mt-4 rounded-3 text-sm py-2 px-3 border-0 border-start border-danger border-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error() }}
+              </div>
+            }
+
+            <hr class="my-4 border-light">
+
+            <button class="btn btn-primary w-100 btn-lg rounded-pill fw-bold d-flex justify-content-center align-items-center" 
+                    type="submit" 
+                    [disabled]="loading() || checkoutForm.invalid">
+              @if (loading()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                İşleniyor...
+              } @else {
+                <i class="bi bi-lock-fill me-2"></i>
+                ${{ cartService.totalPrice() | number:'1.2-2' }} Güvenli Ödeme Yap
+              }
+            </button>
+          </div>
+
+          <!-- PayPal Payment -->
+          <div [class.d-none]="selectedPaymentMethod() !== 'paypal'" class="text-center py-3">
+            @if (checkoutForm.invalid) {
+              <div class="alert alert-warning rounded-4 text-sm py-3 px-3 border-0 d-flex align-items-center justify-content-center text-start">
+                <i class="bi bi-info-circle-fill fs-4 text-warning me-3"></i> 
+                <div>PayPal ile ödeme yapabilmek için lütfen yukarıdaki <strong>Teslimat Adresi</strong> bölümünü eksiksiz doldurun.</div>
+              </div>
+            } @else {
+              <div id="paypal-button-container" class="mt-2 w-100" style="max-width: 500px; margin: 0 auto; min-height: 150px;"></div>
+              @if (error() && selectedPaymentMethod() === 'paypal') {
+                <div class="alert alert-danger mt-4 rounded-3 text-sm py-2 px-3 border-0 border-start border-danger border-4 text-start">
+                  <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error() }}
+                </div>
+              }
+            }
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <!-- Logo -->
+    <div class="text-center mb-4">
+      <div class="auth-logo mx-auto mb-3">
+        <i class="bi bi-person-plus text-white fs-1"></i>
+      </div>
+      <h2 class="auth-title">Üye Ol</h2>
+      <p class="text-muted">Yeni hesap oluşturun</p>
+    </div>
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="alert alert-danger rounded-xl d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()">
+      <!-- Name -->
+      <div class="mb-3">
+        <label class="auth-label" for="name">Ad Soyad</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text"><i class="bi bi-person"></i></span>
+          <input id="name" type="text" class="form-control"
+                 placeholder="Adınız Soyadınız"
+                 [value]="name()"
+                 (input)="name.set($any($event.target).value)"
+                 required>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="auth-label" for="reg-email">E-posta</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+          <input id="reg-email" type="email" class="form-control"
+                 placeholder="ornek@mail.com"
+                 [value]="email()"
+                 (input)="email.set($any($event.target).value)"
+                 required>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label class="auth-label" for="reg-password">Şifre</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input id="reg-password"
+                 [type]="showPassword() ? 'text' : 'password'"
+                 class="form-control"
+                 placeholder="En az 6 karakter"
+                 [value]="password()"
+                 (input)="password.set($any($event.target).value)"
+                 required>
+          <button type="button" class="input-group-text bg-white"
+                  (click)="showPassword.set(!showPassword())">
+            <i [class]="'bi ' + (showPassword() ? 'bi-eye-slash' : 'bi-eye') + ' text-muted'"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-4">
+        <label class="auth-label" for="confirm-password">Şifre Tekrar</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+          <input id="confirm-password"
+                 [type]="showPassword() ? 'text' : 'password'"
+                 class="form-control"
+                 placeholder="Şifrenizi tekrar girin"
+                 [value]="confirmPassword()"
+                 (input)="confirmPassword.set($any($event.target).value)"
+                 required>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary-custom btn w-100 mb-3"
+              [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          Kayıt yapılıyor...
+        } @else {
+          <i class="bi bi-person-check me-2"></i>Üye Ol
+        }
+      </button>
+
+      <!-- Login Link -->
+      <p class="text-center text-muted mb-0">
+        Zaten hesabınız var mı?
+        <a routerLink="/login" style="color:var(--primary);font-weight:600"> Giriş Yap</a>
+      </p>
+    </form>
+  </div>
+</div>

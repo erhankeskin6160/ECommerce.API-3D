@@ -1,0 +1,110 @@
+<div class="profile-page py-5">
+  <div class="container" style="max-width: 760px;">
+
+    <!-- Header -->
+    <div class="mb-4 d-flex align-items-center gap-3">
+      <div class="profile-avatar">
+        <i class="bi bi-person-circle"></i>
+      </div>
+      <div>
+        <h2 class="fw-bold mb-0">{{ currentUser()?.fullName }}</h2>
+        <p class="text-muted mb-0 small">{{ currentUser()?.email }}</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="profile-tabs mb-4">
+      <button class="profile-tab" [class.active]="activeTab() === 'profile'" (click)="activeTab.set('profile')">
+        <i class="bi bi-person me-2"></i>Kişisel Bilgiler
+      </button>
+      <button class="profile-tab" [class.active]="activeTab() === 'password'" (click)="activeTab.set('password')">
+        <i class="bi bi-shield-lock me-2"></i>Şifre Değiştir
+      </button>
+    </div>
+
+    <!-- Profile Tab -->
+    @if (activeTab() === 'profile') {
+      <div class="profile-card">
+        <h5 class="fw-bold mb-1">Kişisel Bilgiler</h5>
+        <p class="text-muted small mb-4">Ad ve soyad bilgilerinizi güncelleyin.</p>
+
+        @if (profileSuccess()) {
+          <div class="alert alert-success border-0 rounded-3 d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle-fill"></i> {{ profileSuccess() }}
+          </div>
+        }
+        @if (profileError()) {
+          <div class="alert alert-danger border-0 rounded-3 d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i> {{ profileError() }}
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label fw-500 small text-muted">E-posta Adresi</label>
+          <input type="email" class="form-control profile-input" [value]="currentUser()?.email" disabled>
+          <div class="form-text">E-posta adresi değiştirilemez.</div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-500 small text-muted">Ad Soyad</label>
+          <input type="text" class="form-control profile-input" [(ngModel)]="profileForm.fullName" placeholder="Adınız ve soyadınız">
+        </div>
+        <button class="btn btn-profile-save w-100" (click)="saveProfile()" [disabled]="profileLoading()">
+          @if (profileLoading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>Kaydediliyor...
+          } @else {
+            <i class="bi bi-check2 me-2"></i>Değişiklikleri Kaydet
+          }
+        </button>
+      </div>
+    }
+
+    <!-- Password Tab -->
+    @if (activeTab() === 'password') {
+      <div class="profile-card">
+        <h5 class="fw-bold mb-1">Şifre Değiştir</h5>
+        <p class="text-muted small mb-4">Güvenliğiniz için şifrenizi düzenli olarak güncelleyin.</p>
+
+        @if (passwordSuccess()) {
+          <div class="alert alert-success border-0 rounded-3 d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle-fill"></i> {{ passwordSuccess() }}
+          </div>
+        }
+        @if (passwordError()) {
+          <div class="alert alert-danger border-0 rounded-3 d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i> {{ passwordError() }}
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label fw-500 small text-muted">Mevcut Şifre</label>
+          <input type="password" class="form-control profile-input" [(ngModel)]="passwordForm.currentPassword" placeholder="••••••••">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-500 small text-muted">Yeni Şifre</label>
+          <input type="password" class="form-control profile-input" [(ngModel)]="passwordForm.newPassword" placeholder="Minimum 6 karakter">
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-500 small text-muted">Yeni Şifre (Tekrar)</label>
+          <input type="password" class="form-control profile-input" [(ngModel)]="passwordForm.confirmPassword" placeholder="••••••••">
+        </div>
+        <button class="btn btn-profile-save w-100" (click)="changePassword()" [disabled]="passwordLoading()">
+          @if (passwordLoading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>Güncelleniyor...
+          } @else {
+            <i class="bi bi-shield-check me-2"></i>Şifremi Güncelle
+          }
+        </button>
+      </div>
+    }
+
+    <!-- Quick Links -->
+    <div class="d-flex gap-3 mt-4 flex-wrap">
+      <a routerLink="/orders" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+        <i class="bi bi-receipt me-2"></i>Siparişlerim
+      </a>
+      <a routerLink="/" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+        <i class="bi bi-grid me-2"></i>Alışverişe Devam Et
+      </a>
+    </div>
+  </div>
+</div>

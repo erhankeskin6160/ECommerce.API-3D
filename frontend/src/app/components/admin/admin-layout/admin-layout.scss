@@ -1,0 +1,15 @@
+.active-sidebar {
+  background: rgba(245, 166, 35, 0.15);
+  color: #f5a623 !important;
+  opacity: 1 !important;
+  border-left: 4px solid #f5a623;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 1 !important;
+}
